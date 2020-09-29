@@ -1,2 +1,3 @@
 # HackerRankChallenges
-HackerRank Problems
+HackerRank Problems per areas
+
