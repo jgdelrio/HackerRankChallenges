@@ -1,4 +1,6 @@
 """
+Practice > Data Structures > Stacks > Maximum Element
+
 Maximum Element
   1- Push the element x into the stack.
   2- Delete the element present at the top of the stack.
