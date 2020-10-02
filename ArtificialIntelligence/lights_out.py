@@ -33,6 +33,7 @@ from time import time
 princess_regexp = re.compile(r'p')
 bot_regexp = re.compile(r'm')
 
+# Fixed matrix for testing
 TESTS_BAK = [
     [[0, 1, 1, 0],
      [0, 1, 0, 1],
@@ -40,6 +41,7 @@ TESTS_BAK = [
      [0, 0, 1, 0]],
 ]
 
+# Random matrix for testing and evaluation
 RAND_SIZE = np.random.choice(range(3, 100, 2))
 TESTS = [np.random.randint(0, 2, (RAND_SIZE, RAND_SIZE)).tolist()]
 
