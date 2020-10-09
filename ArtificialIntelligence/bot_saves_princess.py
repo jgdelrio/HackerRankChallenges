@@ -45,35 +45,23 @@ princes_moves_dict = {
 def displayPathtoPrincess(n, grid):
     princess = None
     bot = None
-    centre = ceil(n/2)
-    moves = []
-    princ_move = None
     for idx, row in enumerate(grid):
         p_pos = princess_regexp.search(row)
         b_pos = bot_regexp.search(row)
         if p_pos:
             princess = [idx, p_pos.start()]
         if b_pos:
+            # The bot position is always the middle so this is not really necessary
             bot = [idx, b_pos.start()]
 
-        if princess and (bot is None):
-            if princ_move is None:
-                princ_move = lateral_move(princess, centre)
-            moves.extend(['UP', princ_move])
-            princess = [idx+1, princess[1] + princes_moves_dict[moves[-1]]]
-        elif princess and bot:
-            diff = princess[1] - bot[1]
-            if diff > 0:
-                moves.extend([i for k in range(abs(diff)) for i in ['DOWN', 'RIGHT']])
-                bot = [bot[0]+diff, bot[1]+diff]
-            else:
-                moves.extend([i for k in range(abs(diff)) for i in ['DOWN', 'LEFT']])
-                bot = [bot[0]-diff, bot[1]+diff]
+    vert_moves = bot[0] - princess[0]
+    hor_moves = bot[1] - princess[1]
 
-        if bot is not None and bot == princess:
-            moves_str = '\n'.join(moves)
-            print(moves_str)
-            return moves
+    moves = [i for k in range(abs(vert_moves)) for i in ['UP' if vert_moves > 0 else 'DOWN',
+                                                         'LEFT' if hor_moves > 0 else 'RIGHT']]
+    moves_str = '\n'.join(moves)
+    print(moves_str)
+    return moves
 
 
 def hackerrank_run():

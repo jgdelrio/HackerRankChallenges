@@ -26,7 +26,7 @@ Output Format
 You are required to output two single spaced integers that is the position of the cell you wish to fire.
 """
 import re
-import random
+import numpy as np
 from time import time
 
 
@@ -42,45 +42,28 @@ TESTS_BAK = [
 ]
 
 # Random matrix for testing and evaluation
-SIZE_LIMIT = 10                                       # Up to 100 in the challenge
-RAND_SIZE = random.choice(range(3, SIZE_LIMIT, 2))
-TESTS = [[random.choices(range(0,2), k=RAND_SIZE) for _ in range(RAND_SIZE)]]
+RAND_SIZE = np.random.choice(range(3, 100, 2))
+TESTS = [np.random.randint(0, 2, (RAND_SIZE, RAND_SIZE)).tolist()]
+
 
 policy_dict = {1: 'policy1', 2: 'policy2'}
 
 
-def sum_grid(grid):
-    return sum(map(sum, grid))
-
-
-def locate(grid, number):
-    return [(row_idx, col_idx) for row_idx, row in enumerate(grid) for col_idx, elem in enumerate(row) if elem == number]
-
-
 def nextMove(player, grid):
     n = len(grid)
+    grid = np.array(grid)
 
-    evaluation = []
-    for idx, row in enumerate(grid):
-        evaluation.append(grid[idx])
-        # Add next row if exists
-        if idx + 1 < n:
-            evaluation[idx] = [e + i for e, i in zip(evaluation[idx], grid[idx+1])]
-        # Add next column
-        for k in range(n-1):
-            evaluation[idx][k] += row[k+1]
-        # Clean up
-        evaluation[idx] = [e * i for e, i in zip(evaluation[idx], grid[idx])]
-
-    locate_3 = locate(evaluation, 3)
+    evaluation = (grid * (grid + \
+                          np.concatenate([grid[1:, :], np.zeros((1, n))], axis=0) + \
+                          np.concatenate([grid[:, 1:], np.zeros((n, 1))], axis=1)) ).astype('uint8')
+    locate_3 = np.argwhere(evaluation == 3)
     n3 = len(locate_3)
-    locate_2 = locate(evaluation, 2)
+    locate_2 = np.argwhere(evaluation == 2)
     n2 = len(locate_2)
-    locate_1 = locate(evaluation, 1)
+    locate_1 = np.argwhere(evaluation == 1)
     n1 = len(locate_1)
     total = sum_grid(grid)
-    print(f"Player: {player} --> Total sum: {total} | Evaluation table...")
-    print_grid(evaluation)
+    print(f"Player: {player} Evaluation table... \n{evaluation}")
 
     # Set policies: We can set different policies for player 1 and 2 as per policy_dict
     if policy_dict[player] == 'policy1':
@@ -130,14 +113,14 @@ def update_grid(grid, move):
         if move[0]+1 < n:
             grid[move[0]+1][move[1]] = 1 - grid[move[0]+1][move[1]]
         print(f"Updated grid:")
-        print_grid(grid)
+        print(np.array(grid))
         return grid
     else:
         raise ValueError(f"The move '{move}' is not allowed")
 
 
-def print_grid(grid):
-    [print(f" {row}") for row in grid]
+def sum_grid(grid):
+    return np.sum(np.array(grid))
 
 
 def test():
@@ -146,8 +129,7 @@ def test():
     for grid in data:
         t0 = time()
         total_sum = 1
-        print(f"Initial grid:")
-        print_grid(grid)
+        print(f"Initial grid: \n{np.array(grid)}")
         while total_sum > 0:
             move = nextMove(player, grid)
             grid = update_grid(grid, move)

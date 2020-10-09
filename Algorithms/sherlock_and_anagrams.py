@@ -1,5 +1,5 @@
 """
-Practice > Algorithms > Strings > Sherlock adn Anagrams
+Practice > Algorithms > Strings > Sherlock and Anagrams
 
 Two strings are anagrams of each other if the letters of one string can be rearranged
 to form the other string. Given a string, find the number of pairs of substrings of the
