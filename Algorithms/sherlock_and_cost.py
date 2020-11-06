@@ -55,7 +55,6 @@ def cost(B: list) -> int:
     return max(hi, low)
 
 
-
 def hackerrank_run():
     fptr = open(os.environ['OUTPUT_PATH'], 'w')
 
