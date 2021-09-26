@@ -14,14 +14,33 @@ create a permutation where every   |pos[i] - i| = k. If k = 2, we could rearrang
 import os
 from time import time
 
-TEST1 = ([[2, 1], [2, 1]],
-         [[3, 0], [1, 2, 3]],
-         [[3, 2], [-1]],
-         [[100, 2], [3, 4, 1, 2, 7, 8, 5, 6, 11, 12, 9, 10, 15, 16, 13, 14, 19, 20, 17, 18, 23, 24,
-                     21, 22, 27, 28, 25, 26, 31, 32, 29, 30, 35, 36, 33, 34, 39, 40, 37, 38, 43, 44,
-                     41, 42, 47, 48, 45, 46, 51, 52, 49, 50, 55, 56, 53, 54, 59, 60, 57, 58, 63, 64,
-                     61, 62, 67, 68, 65, 66, 71, 72, 69, 70, 75, 76, 73, 74, 79, 80, 77, 78, 83, 84,
-                     81, 82, 87, 88, 85, 86, 91, 92, 89, 90, 95, 96, 93, 94, 99, 100, 97, 98]])
+TEST1 = (
+    [[1, 0], [1]],
+    [[1, 1], [-1]],
+    [[2, 0], [1, 2]],
+    [[2, 1], [2, 1]],
+    [[2, 2], [-1]],  # Fail in all
+    [[3, 0], [1, 2, 3]],
+    [[3, 1], [-1]],  # Fail in the last  2 3 1
+    [[3, 2], [-1]],  # Fail in the middle  3 x 1
+    [[4, 1], [2, 1, 4, 3]],
+    [[4, 2], [3, 4, 1, 2]],
+    [[4, 3], [-1]],  # Fail in the middle 4 x x 1
+    [[5, 1], [-1]],  # Requires the 4 twice [2, 3, 4, 5, 4]
+    [[5, 2], [-1]],  # Requires the 3 twice [3, 4, 5, 2, 3]
+    [[5, 3], [-1]],  # Not possible [4, 5, x, 1, 2]
+    [[5, 4], [-1]],  # Not possible [5, x, x, 5, 1]
+    [[6, 1], [2, 1, 4, 3, 6, 5]],
+    [[100, 2], [3, 4, 1, 2, 7, 8, 5, 6, 11, 12, 9, 10, 15, 16, 13, 14, 19, 20, 17, 18, 23, 24,
+                21, 22, 27, 28, 25, 26, 31, 32, 29, 30, 35, 36, 33, 34, 39, 40, 37, 38, 43, 44,
+                41, 42, 47, 48, 45, 46, 51, 52, 49, 50, 55, 56, 53, 54, 59, 60, 57, 58, 63, 64,
+                61, 62, 67, 68, 65, 66, 71, 72, 69, 70, 75, 76, 73, 74, 79, 80, 77, 78, 83, 84,
+                81, 82, 87, 88, 85, 86, 91, 92, 89, 90, 95, 96, 93, 94, 99, 100, 97, 98]],
+)
+
+# Notes:   3 4 1 2
+# - For k = 0 the series 1..n is the answer.
+# - k must be 0 ... n-1
 
 
 def absolutePermutation(n, k):
@@ -35,11 +54,13 @@ def absolutePermutation(n, k):
             # find the s number that will allow to comply with the requirement
             result.append(val)
             s.remove(val)       # once used extract the s from the list of available candidates
-        elif pos + k in s:          # try the same thing with the sum
-            result.append(pos + k)
-            s.remove(pos + k)
         else:
-            return [-1]
+            val = pos + k
+            if val in s:          # try the same thing with the sum
+                result.append(val)
+                s.remove(val)
+            else:
+                return [-1]
 
     return result
 
@@ -72,6 +93,8 @@ def test():
             t0 = time()
             rst = absolutePermutation(input[0], input[1])
             t.append(time() - t0)
+            if rst != output:
+                print(f'Input: {d}. Result: {rst}')
             assert (rst == output)
     print(f'Av time: {sum(t) / repeat}')
     print(f'Total time: {sum(t)}')
